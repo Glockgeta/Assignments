@@ -1,7 +1,7 @@
 
 public class AceCard extends Card {
 	
-	@override
+	@override       
 	public Card(int number, int cardsuit) {
 		cardNumber = Numbers
 	}
