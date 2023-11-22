@@ -18,8 +18,9 @@ public class Blackjack {
 		chips = 1000;
 		bet(sc);
 		initialize();
-		prompt();
-		
+		if (playerScore<21) {
+		prompt(sc); //prompt only when playerScore < 21
+		}
 		
 		return true;
 	}
@@ -54,8 +55,7 @@ public class Blackjack {
 			System.out.println("You have the " + playerCard1.getCard() + " and the " + playerCard2.getCard()  
 								+ ". Your total point value is " + playerScore + ". ");
 			System.out.println("The visible dealer card is the " + dealerCard1.getCard() + ". ");
-			System.out.println("Press H to hit."); //should only display these two if not BUST
-			System.out.println("Press S to stand."); //see note above 
+			//removed user prompt for 'H' or 'S'
 		}
 	} 
 	public void hitReturn(Scanner sc) { // pass the Scanner as a parameter

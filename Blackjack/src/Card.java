@@ -14,7 +14,7 @@ public class Card {
 		
 
 	public int getPointValue() {
-		return pointValue;
+		return pointValue; //Idea- make superclass skeleton so getPointValue can draw numbers, faces, and ace. 
 	}
 	
 	public void setPointValue(int value) {
