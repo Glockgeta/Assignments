@@ -14,7 +14,7 @@ public class Card {
 		
 
 	public int getPointValue() {
-		return pointValue; //Idea- make superclass skeleton so getPointValue can draw numbers, faces, and ace
+		return pointValue; 
 	}
 	
 	public void setPointValue(int value) {
@@ -29,15 +29,34 @@ public class Card {
 	public Card() { //for infinite decks
 		pointValue = random.nextInt(8) + 2;
 		cardNumber = Numbers[pointValue - 2];
-		suit = Suits[random.nextInt(3) + 1];
+		suit = Suits[random.nextInt(4)];
 	}
 
 	
-	public Card(int number, int cardSuit) { //for random deck generation from numbers
-		cardNumber = Numbers[number - 2];
-		suit = Suits[cardSuit];
-		pointValue = number;
+	public Card(int number, int cardSuit) {
+	    if (number >= 2 && number <= 10) {
+	        cardNumber = Numbers[number - 2];
+	        pointValue = number;
+	    } 
+	    else if (number >= 11 && number <= 13) {
+	        FaceCard faceCard = new FaceCard();
+	        cardNumber = faceCard.getCardNumber();
+	        pointValue = faceCard.getPointValue();
+	    }
+	    else if (number == 14) {
+	        AceCard aceCard = new AceCard();
+	        cardNumber = aceCard.getCardNumber();
+	        pointValue = aceCard.getPointValue();
+	    } else {
+	        
+	        cardNumber = "Invalid";
+	        pointValue = 0;
+	    }
+
+	    suit = Suits[cardSuit];
 	}
+
+
 	
 	
 	public void print() {
@@ -47,5 +66,7 @@ public class Card {
 	public String getCard() {
 		return cardNumber + " of " + suit;
 	}
+
+
 	
 }

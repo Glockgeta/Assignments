@@ -12,18 +12,31 @@ public class Blackjack {
 	private HashSet<Card> deck;
 	
 	
-	
-	
-	public boolean play(Scanner sc) { //True = game won, false = game lost
-		chips = 1000;
-		bet(sc);
-		initialize();
-		if (playerScore<21) {
-		prompt(sc); //prompt only when playerScore < 21
-		}
-		
-		return true;
+	public Blackjack() { //constructor for chips=1000
+		chips=1000;
 	}
+	
+	public boolean play(Scanner sc) {
+	  
+	    playerScore = 0;
+	    dealerScore = 0;
+	   
+	    bet(sc);
+	    initialize();
+
+	    // check for a blackjack
+	    if (playerScore == BUST) {
+	        System.out.println("Congratulations. You have a blackjack!");
+	        chips += betAmount * 3 / 2; // Blackjack payout
+	        return true;
+	    }
+
+	    // check if the player wants to hit or stand
+	    prompt(sc);
+
+	    return true;
+	}
+
 	
 	
 	public void bet(Scanner sc) {
@@ -58,8 +71,8 @@ public class Blackjack {
 			//removed user prompt for 'H' or 'S'
 		}
 	} 
-	public void hitReturn(Scanner sc) { // pass the Scanner as a parameter
-	    Card playerCard3 = new Card(); // penerate a new random card
+	public void hitReturn(Scanner sc) {
+	    Card playerCard3 = new Card(); 
 	    playerScore += playerCard3.getPointValue();
 
 	    System.out.println("You picked up the " + playerCard3.getCard() + ".");
@@ -67,11 +80,41 @@ public class Blackjack {
 
 	    if (isBust()) {
 	        System.out.println("Bust! You went over 21. You lose!");
-	      
+
+	       
+	        chips -= betAmount;
+
+
 	    } else {
-	        prompt(sc); // pass the Scanner when calling prompt
+	        prompt(sc); 
 	    }
 	}
+
+	public void stand(Scanner sc) {
+	    while (dealerScore < 17) {
+	        Card dealerCard = new Card();
+	        dealerScore += dealerCard.getPointValue();
+	        System.out.println("Dealer picked up the " + dealerCard.getCard() + ".");
+	    }
+
+	    System.out.println("Dealer's total point value is " + dealerScore + ".");
+
+	    if (dealerScore > BUST) {
+	        System.out.println("Dealer busts! You win!");
+	        chips += betAmount;
+	    } else if (playerScore > dealerScore) {
+	        System.out.println("You win!");
+	        chips += betAmount;
+	    } else if (playerScore < dealerScore) {
+	        System.out.println("Dealer wins. You lose!");
+	        chips -= betAmount;
+	    } else {
+	        System.out.println("It's a draw!");
+	    }
+
+	    
+	}
+
 
 	public void prompt(Scanner sc) { // asks the player whether they want to hit or stand
 	    System.out.println("Press H to hit.");
@@ -84,7 +127,7 @@ public class Blackjack {
 	            hitReturn(sc); // pass the Scanner when calling hitReturn
 	            break;
 	        case "S":
-	         
+	         stand(sc);
 	            break;
 	        default:
 	            System.out.println("Invalid input. Please enter H to hit or S to stand.");
@@ -96,31 +139,28 @@ public class Blackjack {
 	
 	
 	
-	public void deckFill() { //randomly chooses card between 1 and 13
-		String tempCardName;
-		
-		for (int j = 0; j < 4; j++) {
-			for (int i = 0; i < 13; i++) {
-				if (i < 9) {
-					System.out.print("Number card. ");
-				} else if ((i > 8) && (i < 12)) {
-					System.out.print("Face card. ");
-				} else {
-					System.out.print("Ace.");
-				}
-				
-				Card card = new Card(i, j);
-				deck.add(card);
-				
-				//System.out.println("cardIndex " + (i + 1) + ", suitIndex " + (j + 1));
-				
-				//on i = 0-8: Card.java
-				//on i = 9-11: FaceCard.java
-				//on i = 12: AceCard
-				//each instance has a suit, happens 4X
-			}
-		}
+	public void deckFill() {
+	    deck = new HashSet<>(); //initialize the HashSet
+
+	    for (int j = 0; j < 4; j++) {
+	        for (int i = 0; i < 13; i++) {
+	            Card card;
+	            if (i < 9) {
+	                card = new Card(i, j);
+	            } else if ((i > 8) && (i < 12)) {
+	                card = new FaceCard();
+	            } else {
+	                card = new AceCard();
+	            }
+
+	            deck.add(card);
+	        }
+	    }
+
+	    
+	    System.out.println("Deck has been filled with cards.");
 	}
+
 	
 	public boolean isBust() {
 		if (playerScore > 21) {
@@ -129,49 +169,37 @@ public class Blackjack {
 			return false;
 		}
 	}
+	public int getChips() {
+        return chips;
+    }
 	
 	
 	
 	
 	public static void main(String[] args) {
-		
-		
-		Blackjack game = new Blackjack();
-		Scanner sc = new Scanner(System.in);
-		Random rand = new Random();
-		
-		System.out.println("Blackjack! Press the Enter key to begin.");
-		
-		sc.nextLine();
-		
-		game.play(sc);
-		
-		game.deckFill();
-		
-		
-		
-		String hitStand;
-		
-		
-			
-		hitStand = sc.next();
-		
-		while (hitStand.equals("H")) {
-		    game.hitReturn(sc);
+	    Blackjack game = new Blackjack();
+	    Scanner sc = new Scanner(System.in);
 
-		    if (playerScore > BUST) {
-		        break;
-		    }
+	    System.out.println("Blackjack! Press the Enter key to begin.");
+	    sc.nextLine();
 
-		    System.out.println("Press H to hit.");
-		    System.out.println("Press S to stand.");
-		    hitStand = sc.next();
-		}
+	    while (game.play(sc)) {
+	        // Check if the player has enough chips to continue playing
+	        if (game.getChips() <= 0) {
+	            System.out.println("You are out of chips. Game over!");
+	            break;
+	        }
 
-			
-		System.out.println("BALLS"); 
-		
-		
+	        System.out.println("Do you want to play another hand? (Y/N)");
+	        String playAgain = sc.next();
+	        if (playAgain.equalsIgnoreCase("N")) {
+	            break;
+	        }
+	    }
+
+	    sc.close();
+	    System.out.println("Thanks for playing!");
 	}
+
 
 }
