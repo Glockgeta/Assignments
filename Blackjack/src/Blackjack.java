@@ -1,6 +1,8 @@
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 public class Blackjack {
 	private int chips;
@@ -51,26 +53,32 @@ public class Blackjack {
 		System.out.println("You are betting " + betAmount + " chips on this hand.");
 	}
 	
-	public void initialize() { //sets up the HashMap deck
-		Card dealerCard1 = new Card(); //visible card
-		dealerScore += dealerCard1.getPointValue();
-		Card dealerCard2 = new Card(); //invisible card
-		dealerScore += dealerCard2.getPointValue();
-		
-		Card playerCard1 = new Card();
-		playerScore += playerCard1.getPointValue();
-		Card playerCard2 = new Card();
-		playerScore += playerCard2.getPointValue();
-		
-		if (playerCard1.getPointValue() + playerCard2.getPointValue() == 21) {
-			System.out.println("Congratulations. You have a blackjack!");
-		} else {
-			System.out.println("You have the " + playerCard1.getCard() + " and the " + playerCard2.getCard()  
-								+ ". Your total point value is " + playerScore + ". ");
-			System.out.println("The visible dealer card is the " + dealerCard1.getCard() + ". ");
-			//removed user prompt for 'H' or 'S'
-		}
-	} 
+	public void initialize() {//sets hashmap deck
+	    Card dealerCard1 = new Card(); // visible card
+	    dealerScore += dealerCard1.getPointValue();
+	    
+	    Card dealerCard2;
+	    do {
+	        dealerCard2 = new Card(); // invisible card
+	    } while (dealerCard2.getCard().equals(dealerCard1.getCard())); // ensure the invisible card is different
+	    
+	    dealerScore += dealerCard2.getPointValue();
+
+	    Card playerCard1 = new Card();
+	    playerScore += playerCard1.getPointValue();
+	    Card playerCard2 = new Card();
+	    playerScore += playerCard2.getPointValue();
+	    
+	    if (playerCard1.getPointValue() + playerCard2.getPointValue() == 21) {
+	        System.out.println("Congratulations. You have a blackjack!");
+	    } else {
+	        System.out.println("You have the " + playerCard1.getCard() + " and the " + playerCard2.getCard()
+	                            + ". Your total point value is " + playerScore + ". ");
+	        System.out.println("The visible dealer card is the " + dealerCard1.getCard() + ". ");
+	        // removed user prompt for 'H' or 'S'
+	    }
+	}
+
 	public void hitReturn(Scanner sc) {
 	    Card playerCard3 = new Card(); 
 	    playerScore += playerCard3.getPointValue();
@@ -91,7 +99,11 @@ public class Blackjack {
 	}
 
 	public void stand(Scanner sc) {
-	    while (dealerScore < 17) {
+	    Card dealerCard2 = new Card();
+	    dealerScore += dealerCard2.getPointValue();
+	    System.out.println("Dealer's invisible card is the " + dealerCard2.getCard() + ".");
+
+	    while (dealerScore <= 16) {
 	        Card dealerCard = new Card();
 	        dealerScore += dealerCard.getPointValue();
 	        System.out.println("Dealer picked up the " + dealerCard.getCard() + ".");
@@ -111,9 +123,15 @@ public class Blackjack {
 	    } else {
 	        System.out.println("It's a draw!");
 	    }
-
-	    
 	}
+
+
+
+
+
+
+
+
 
 
 	public void prompt(Scanner sc) { // asks the player whether they want to hit or stand
@@ -184,7 +202,7 @@ public class Blackjack {
 	    sc.nextLine();
 
 	    while (game.play(sc)) {
-	        // Check if the player has enough chips to continue playing
+	      
 	        if (game.getChips() <= 0) {
 	            System.out.println("You are out of chips. Game over!");
 	            break;
